@@ -20,4 +20,4 @@ This is a CLI-based interactive platform for managing pizza orders, developed as
 ## How to Run
 1. Clone the repository:
    ```bash
-   git clone <your-repository-link>
+   git clone <repository-link>
