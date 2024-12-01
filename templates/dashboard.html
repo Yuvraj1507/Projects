@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Monitoring Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .card {
+            background-color: #f9f9f9;
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status {
+            display: flex;
+            justify-content: space-between;
+        }
+        .status div {
+            font-size: 18px;
+        }
+        .location {
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-Time Health Monitoring Dashboard</h1>
+
+        <div class="card">
+            <h2>Heart Rate</h2>
+            <div class="status">
+                <div id="heart-rate">Loading...</div>
+                <div id="heart-alert"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Body Temperature</h2>
+            <div class="status">
+                <div id="temperature">Loading...</div>
+                <div id="temp-alert"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Location</h2>
+            <div class="location">
+                <div id="location">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch health data from Flask API
+        function fetchHealthData() {
+            fetch('/health_data')
+                .then(response => response.json())
+                .then(data => {
+                    // Update Heart Rate
+                    const heartRate = data.heart_rate;
+                    document.getElementById('heart-rate').textContent = heartRate + " bpm";
+                    if (heartRate < 60) {
+                        document.getElementById('heart-alert').innerHTML = '<div class="alert">Low heart rate detected!</div>';
+                    } else if (heartRate > 120) {
+                        document.getElementById('heart-alert').innerHTML = '<div class="alert">High heart rate detected!</div>';
+                    } else {
+                        document.getElementById('heart-alert').innerHTML = '';
+                    }
+
+                    // Update Body Temperature
+                    const temperature = data.body_temperature;
+                    document.getElementById('temperature').textContent = temperature.toFixed(2) + "°C";
+                    if (temperature < 35.0) {
+                        document.getElementById('temp-alert').innerHTML = '<div class="alert">Hypothermia detected!</div>';
+                    } else if (temperature > 38.0) {
+                        document.getElementById('temp-alert').innerHTML = '<div class="alert">High fever detected!</div>';
+                    } else {
+                        document.getElementById('temp-alert').innerHTML = '';
+                    }
+
+                    // Update Location
+                    const latitude = data.latitude.toFixed(4);
+                    const longitude = data.longitude.toFixed(4);
+                    document.getElementById('location').textContent = `Latitude: ${latitude}, Longitude: ${longitude}`;
+                });
+        }
+
+        // Fetch data every 5 seconds to update the dashboard
+        setInterval(fetchHealthData, 5000);
+    </script>
+</body>
+</html>
